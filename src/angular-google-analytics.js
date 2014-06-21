@@ -9,7 +9,7 @@ angular.module('angular-google-analytics', [])
             accountId,
             trackPrefix = '',
             domainName,
-            analyticsJS = false,
+            analyticsJS = true,
             pageEvent = '$routeChangeSuccess',
             cookieConfig = 'auto',
             ecommerce = false,
@@ -292,7 +292,37 @@ angular.module('angular-google-analytics', [])
             }
           };
 
+          /**
+           * Set custom variable : ga.js only
+           *
+           * https://developers.google.com/analytics/devguides/collection/gajs/gaTrackingCustomVariables
+           *
+           * @param index
+           * @param name
+           * @param value
+           * @param scope
+           */
+          this._setCustomVariable = function(index, name, value, scope) {
+            if (!analyticsJS && $window._gaq) {
+              $window._gaq.push(['_setCustomVar', index, name, value, scope]);
+              this._log('setCustomVaraible', arguments);
+            }
+          };
 
+          /**
+           * Set custom dimension : Universal Only
+           *
+           * https://developers.google.com/analytics/devguides/platform/customdimsmets
+           *
+           * @param dimension
+           * @param value
+           */
+          this._setCustomDimension = function(dimension, value) {
+            if($window.ga) {
+              @$window.ga('set', dimension, value);
+              this._log('set dim ' + dimension + ' -> ' + value);
+            }
+          };
 
             // creates the ganalytics tracker
           if (analyticsJS) {
@@ -339,6 +369,12 @@ angular.module('angular-google-analytics', [])
                 },
                 send: function (obj) {
                   me._send(obj);
+                },
+                setCustomVariable: function(index, name, value, scope) {
+                  me._setCustomVariable(index,name,value,scope);
+                },
+                setCustomDimension: function(dimension, value) {
+                  me._setCustomDimension(dimension, value);
                 }
             };
         }];
