@@ -319,7 +319,7 @@ angular.module('angular-google-analytics', [])
            */
           this._setCustomDimension = function(dimension, value) {
             if($window.ga) {
-              @$window.ga('set', dimension, value);
+              $window.ga('set', dimension, value);
               this._log('set dim ' + dimension + ' -> ' + value);
             }
           };
