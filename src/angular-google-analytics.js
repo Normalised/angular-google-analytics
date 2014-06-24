@@ -11,7 +11,7 @@ angular.module('angular-google-analytics', [])
             domainName,
             analyticsJS = true,
             pageEvent = '$routeChangeSuccess',
-            cookieConfig = 'auto',
+            config = 'auto',
             ecommerce = false,
             enhancedLinkAttribution = false,
             removeRegExp,
@@ -55,8 +55,8 @@ angular.module('angular-google-analytics', [])
             return true;
           };
 
-          this.setCookieConfig = function (config) {
-            cookieConfig = config;
+          this.setConfig = function (cfg) {
+            config = cfg;
             return true;
           };
 
@@ -128,7 +128,7 @@ angular.module('angular-google-analytics', [])
               m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m);
             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-            $window.ga('create', accountId, cookieConfig);
+            $window.ga('create', accountId, config);
 
             if (trackRoutes && !ignoreFirstPageLoad) {
               $window.ga('send', 'pageview', getUrl());
@@ -341,7 +341,7 @@ angular.module('angular-google-analytics', [])
 
             return {
                 _logs: me._logs,
-                cookieConfig: cookieConfig,
+                config: config,
                 ecommerce: ecommerce,
                 enhancedLinkAttribution: enhancedLinkAttribution,
                 getUrl: getUrl,
