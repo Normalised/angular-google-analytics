@@ -1,6 +1,6 @@
 /**
  * Angular Google Analytics - Easy tracking for your AngularJS application
- * @version v0.0.3 - 2014-06-05
+ * @version v0.0.3 - 2014-06-24
  * @link http://revolunet.com.github.com/angular-google-analytics
  * @author Julien Bouquillon <julien@revolunet.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -16,9 +16,9 @@ angular.module('angular-google-analytics', [])
             accountId,
             trackPrefix = '',
             domainName,
-            analyticsJS = false,
+            analyticsJS = true,
             pageEvent = '$routeChangeSuccess',
-            cookieConfig = 'auto',
+            config = 'auto',
             ecommerce = false,
             enhancedLinkAttribution = false,
             removeRegExp,
@@ -62,8 +62,8 @@ angular.module('angular-google-analytics', [])
             return true;
           };
 
-          this.setCookieConfig = function (config) {
-            cookieConfig = config;
+          this.setConfig = function (cfg) {
+            config = cfg;
             return true;
           };
 
@@ -135,7 +135,7 @@ angular.module('angular-google-analytics', [])
               m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m);
             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-            $window.ga('create', accountId, cookieConfig);
+            $window.ga('create', accountId, config);
 
             if (trackRoutes && !ignoreFirstPageLoad) {
               $window.ga('send', 'pageview', getUrl());
@@ -299,7 +299,37 @@ angular.module('angular-google-analytics', [])
             }
           };
 
+          /**
+           * Set custom variable : ga.js only
+           *
+           * https://developers.google.com/analytics/devguides/collection/gajs/gaTrackingCustomVariables
+           *
+           * @param index
+           * @param name
+           * @param value
+           * @param scope
+           */
+          this._setCustomVariable = function(index, name, value, scope) {
+            if (!analyticsJS && $window._gaq) {
+              $window._gaq.push(['_setCustomVar', index, name, value, scope]);
+              this._log('setCustomVaraible', arguments);
+            }
+          };
 
+          /**
+           * Set custom dimension : Universal Only
+           *
+           * https://developers.google.com/analytics/devguides/platform/customdimsmets
+           *
+           * @param dimension
+           * @param value
+           */
+          this._setCustomDimension = function(dimension, value) {
+            if($window.ga) {
+              $window.ga('set', dimension, value);
+              this._log('set dim ' + dimension + ' -> ' + value);
+            }
+          };
 
             // creates the ganalytics tracker
           if (analyticsJS) {
@@ -318,7 +348,7 @@ angular.module('angular-google-analytics', [])
 
             return {
                 _logs: me._logs,
-                cookieConfig: cookieConfig,
+                config: config,
                 ecommerce: ecommerce,
                 enhancedLinkAttribution: enhancedLinkAttribution,
                 getUrl: getUrl,
@@ -346,6 +376,12 @@ angular.module('angular-google-analytics', [])
                 },
                 send: function (obj) {
                   me._send(obj);
+                },
+                setCustomVariable: function(index, name, value, scope) {
+                  me._setCustomVariable(index,name,value,scope);
+                },
+                setCustomDimension: function(dimension, value) {
+                  me._setCustomDimension(dimension, value);
                 }
             };
         }];

@@ -141,6 +141,9 @@ module.exports = function(grunt) {
   // Build task.
   grunt.registerTask('build', ['test', 'concat', 'uglify']);
 
+  // Build without testing
+  grunt.registerTask('build_notest', ['jshint', 'concat', 'uglify']);
+
   // release task
   grunt.registerTask('release', ['build']);
 
